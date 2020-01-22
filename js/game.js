@@ -1,13 +1,16 @@
 class Game {
-  constructor(ctx, snake) {
-    this.ctx = ctx
-    this.snake = snake;
+  constructor(options) {
+    this.ctx = options.ctx
+    this.snake = options.snake;
     this.interval = undefined;
+    this.rows = options.rows;
+    this.columns = options.columns;
+    this.maxCells = options.maxCells;
   }
 
   _drawSnake() {
     this.snake.body.forEach(position => {
-      this.ctx.fillRect(position.column * 10, position.row * 10, 8, 8);
+      this.ctx.fillRect(position.column * this.maxCells, position.row * this.maxCells, 8, 8);
     });
   }
 
@@ -16,10 +19,31 @@ class Game {
     this._kh7();
     // pintar
     this._drawSnake();
-    console.log('update');
     if (this.interval) {
       this.interval = window.requestAnimationFrame(this._update.bind(this));
     }
+  }
+
+  _assignControlsToKeys() {
+    document.onkeydown = e => {
+      switch (e.keyCode) {
+        case 38: // arrow up
+          this.snake.goUp();
+          break;
+        case 40: // arror down
+          this.snake.goDown();
+          break;
+        case 37: // arror left
+          this.snake.goLeft();
+          break;
+        case 39: // arrow right
+          this.snake.goRight();
+          break;
+        case 80: // p pause
+          this.snake.intervalId ? this.snake.stop() : this.snake.move();
+          break;
+      }
+    };
   }
 
   _kh7() {
@@ -27,6 +51,7 @@ class Game {
   }
 
   start() {
+    this._assignControlsToKeys();
     this.snake.move()
     this.interval = window.requestAnimationFrame(this._update.bind(this));
   }

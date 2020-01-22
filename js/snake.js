@@ -1,29 +1,71 @@
 class Snake {
-  constructor() {
+  constructor(maxRows, maxColumns) {
     this.body = [
       { row: 1, column: 5 },
       { row: 1, column: 4 },
       { row: 1, column: 3 },
       { row: 1, column: 2 },
       { row: 1, column: 1 },
-    ]
+    ];
+    this.maxRows = maxRows;
+    this.maxColumns = maxColumns;
     this.direction = 'right';
     this.intervalId = undefined;
   }
 
   _moveForward() {
+    var head = this.body[0];
     switch (this.direction) {
-      case 'right':
+      case "up":
         this.body.unshift({
-          row: this.body[0].row,
-          column: (this.body[0].column + 1) % 50
-        })
+          row: (head.row - 1 + this.maxRows) % this.maxRows,
+          column: head.column
+        });
         break;
-
-      default:
+      case "down":
+        this.body.unshift({
+          row: (head.row + 1) % this.maxRows,
+          column: head.column
+        });
+        break;
+      case "left":
+        this.body.unshift({
+          row: head.row,
+          column: (head.column - 1 + this.maxColumns) % this.maxColumns
+        });
+        break;
+      case "right":
+        this.body.unshift({
+          row: head.row,
+          column: (head.column + 1) % this.maxColumns
+        });
         break;
     }
-    this.body.pop();
+    this.previousTail = this.body.pop();
+  }
+
+  goUp() {
+    if (this.direction === "left" || this.direction === "right") {
+      this.direction = "up";
+    }
+  }
+
+  goDown() {
+    if (this.direction === "left" || this.direction === "right") {
+      this.direction = "down";
+    }
+  }
+
+  goLeft() {
+    if (this.direction === "up" || this.direction === "down") {
+      this.direction = "left";
+    }
+  }
+
+  goRight() {
+    if (this.direction === "up" || this.direction === "down") {
+      this.direction = "right";
+    }
   }
 
   move() {
