@@ -1,12 +1,13 @@
 class Snake {
   constructor(maxRows, maxColumns) {
-    this.body = [
+    this.initialBody = [
       { row: 1, column: 5 },
       { row: 1, column: 4 },
       { row: 1, column: 3 },
       { row: 1, column: 2 },
       { row: 1, column: 1 },
     ];
+    this.body = [...this.initialBody];
     this.maxRows = maxRows;
     this.maxColumns = maxColumns;
     this.direction = 'right';
@@ -70,5 +71,43 @@ class Snake {
 
   move() {
     this.intervalId = setInterval(this._moveForward.bind(this), 100);
+  }
+
+  grow() {
+    if (this.previousTail) {
+      this.body.push(this.previousTail);
+      this.previousTail = undefined;
+    }
+  }
+
+  hasEatenItSelf() {
+    // the only way to check if the head's position is inside of my body
+    return this.body.some((element, index, array) => {
+      return (
+        element.row === array[0].row &&
+        element.column === array[0].column &&
+        index != 0
+      );
+    });
+  }
+
+  collidesWith(position) {
+    return this.body.some(bodyPiece => {
+      return (
+        bodyPiece.row === position.row && bodyPiece.column === position.column
+      );
+    });
+  }
+
+  reset() {
+    this.body = [...this.initialBody];
+    this.direction = 'right';
+  }
+
+  stop() {
+    if (this.intervalId) {
+      clearInterval(this.intervalId);
+      this.intervalId = undefined;
+    }
   }
 }
